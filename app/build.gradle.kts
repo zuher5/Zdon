@@ -4,6 +4,14 @@ plugins {
     alias(libs.plugins.zdon.android.hilt)
 }
 
+// AGP cannot produce an App Bundle while ABI splits are enabled, because both
+// want to partition the same shrunk resources (b/402800800). A bundle already
+// carries every ABI and Play generates the per-device split itself, so the
+// splits below are only useful for the directly distributed APKs.
+val isBuildingBundle = gradle.startParameter.taskNames.any {
+    it.substringAfterLast(':').startsWith("bundle")
+}
+
 android {
     namespace = "com.zdon.app"
 
@@ -24,7 +32,7 @@ android {
     // FFmpeg payloads are several tens of megabytes per architecture.
     splits {
         abi {
-            isEnable = true
+            isEnable = !isBuildingBundle
             reset()
             include("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
             isUniversalApk = true
