@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="history_title">History</string>
+    <string name="history_search_placeholder">Search title or uploader</string>
+    <string name="history_clear_search">Clear search</string>
+    <string name="history_clear_all">Clear history</string>
+    <string name="history_delete_entry">Delete entry</string>
+    <string name="history_redownload">Download again</string>
+    <string name="history_open">Open</string>
+    <string name="history_empty_title">No history yet</string>
+    <string name="history_empty_description">Completed downloads are listed here.</string>
+    <string name="history_empty_filtered_title">No matches</string>
+    <string name="history_empty_filtered_description">No history entry matches your search.</string>
+    <string name="history_audio_only">Audio</string>
+    <string name="history_no_player">No app can open this file.</string>
+
+    <string name="history_clear_dialog_title">Clear history?</string>
+    <string name="history_clear_dialog_message">This removes the list only; your downloaded files are kept.</string>
+    <string name="history_clear_dialog_confirm">Clear</string>
+    <string name="history_clear_dialog_dismiss">Keep</string>
+
+</resources>

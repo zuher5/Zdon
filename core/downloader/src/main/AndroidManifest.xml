@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        This module owns the download notifications and the foreground service,
+        so it declares the permissions those require. The values merge into the
+        app manifest at build time.
+
+        POST_NOTIFICATIONS is requested at runtime on Android 13+; posting is
+        wrapped in a SecurityException guard so a denied permission degrades
+        gracefully instead of crashing.
+    -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+</manifest>

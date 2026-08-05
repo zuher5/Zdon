@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- URL input -->
+    <string name="home_url_label">Media link</string>
+    <string name="home_url_placeholder">https://…</string>
+    <string name="home_url_supporting">Paste a link from YouTube, TikTok, Instagram, Facebook, X, Reddit, Vimeo, Dailymotion or SoundCloud.</string>
+    <string name="home_clear_url">Clear link</string>
+    <string name="home_paste">Paste</string>
+    <string name="home_analyze">Analyze</string>
+    <string name="home_download">Download</string>
+    <string name="home_clipboard_empty">The clipboard does not contain a link.</string>
+
+    <!-- Validation -->
+    <string name="home_error_malformed_url">That link does not look complete.</string>
+    <string name="home_error_unsupported_scheme">Only http and https links are supported.</string>
+    <string name="home_error_illegal_characters">The link contains characters that are not allowed.</string>
+
+    <!-- Recent -->
+    <string name="home_recent_title">Recent links</string>
+    <string name="home_recent_empty">Links you download will appear here.</string>
+
+    <!-- Analysis result -->
+    <string name="home_analyzing">Reading media information…</string>
+    <string name="home_analysis_failed_title">Could not read that link</string>
+    <string name="home_uploader">%1$s</string>
+    <string name="home_views">%1$s views</string>
+    <string name="home_playlist_count">Playlist · %1$d items</string>
+    <string name="home_estimated_size">Estimated size %1$s</string>
+    <string name="home_size_unknown">Size unknown</string>
+
+    <plurals name="home_subtitle_languages">
+        <item quantity="one">%1$d subtitle language</item>
+        <item quantity="other">%1$d subtitle languages</item>
+    </plurals>
+
+    <!-- Format selection -->
+    <string name="home_quality_title">Quality</string>
+    <string name="home_video_formats_title">Video</string>
+    <string name="home_audio_formats_title">Audio</string>
+    <string name="home_no_formats">This link offers no downloadable streams.</string>
+    <string name="home_format_selected">Selected</string>
+    <string name="home_fps">%1$d fps</string>
+    <string name="home_video_bitrate">%1$d kbps video</string>
+    <string name="home_audio_bitrate">%1$d kbps audio</string>
+    <string name="home_approximate_size">≈ %1$s</string>
+
+    <!-- Options -->
+    <string name="home_options_title">Options</string>
+    <string name="home_extract_audio">Extract audio only</string>
+    <string name="home_audio_format">Audio format</string>
+    <string name="home_download_subtitles">Download subtitles</string>
+    <string name="home_embed_thumbnail">Embed thumbnail</string>
+    <string name="home_embed_metadata">Embed metadata</string>
+    <string name="home_download_playlist">Download the whole playlist</string>
+    <string name="home_custom_filename">Custom file name (optional)</string>
+    <string name="home_custom_filename_supporting">Leave empty to use the title from the site.</string>
+
+    <!-- Folder -->
+    <string name="home_no_folder_title">Choose a download folder</string>
+    <string name="home_no_folder_description">Zdon saves media to a folder you pick, so no storage permission is needed.</string>
+    <string name="home_choose_folder">Choose folder</string>
+
+    <!-- Feedback -->
+    <plurals name="home_queued">
+        <item quantity="one">%1$d download queued</item>
+        <item quantity="other">%1$d downloads queued</item>
+    </plurals>
+
+</resources>

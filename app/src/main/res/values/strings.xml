@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Zdon</string>
+
+    <string name="destination_home">Home</string>
+    <string name="destination_downloads">Downloads</string>
+    <string name="destination_history">History</string>
+    <string name="destination_settings">Settings</string>
+
+</resources>

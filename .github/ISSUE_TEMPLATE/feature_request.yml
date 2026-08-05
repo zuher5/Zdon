@@ -1,0 +1,59 @@
+name: Feature Request
+description: Suggest an improvement or new capability
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please search existing issues and the roadmap in the README before
+        opening a new request.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do that is currently awkward or impossible?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like Zdon to do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you thought about, and why they fall short.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Download engine
+        - Downloads screen
+        - History
+        - Settings
+        - Home / URL analysis
+        - Notifications
+        - Theming / UI
+        - Build / tooling
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues
+          required: true
+        - label: This is not already on the roadmap
+          required: true

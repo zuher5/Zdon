@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or discussion
+    url: https://github.com/zuher5/Zdon/discussions
+    about: Ask usage questions or discuss ideas before filing an issue.
+  - name: Security vulnerability
+    url: https://github.com/zuher5/Zdon/security/advisories/new
+    about: Report vulnerabilities privately. Do not open a public issue.
+  - name: yt-dlp site support
+    url: https://github.com/yt-dlp/yt-dlp/issues
+    about: Report site extraction failures upstream to yt-dlp.

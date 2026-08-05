@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="downloads_title">Downloads</string>
+    <string name="downloads_empty_title">No downloads yet</string>
+    <string name="downloads_empty_description">Paste a link on the Home tab to start your first download.</string>
+    <string name="downloads_empty_filtered_title">Nothing here</string>
+    <string name="downloads_empty_filtered_description">No downloads match this filter.</string>
+    <string name="downloads_clear_finished">Clear finished</string>
+    <string name="downloads_cancel_all">Cancel all</string>
+    <string name="downloads_remove">Remove</string>
+
+    <string name="downloads_filter_all">All</string>
+    <string name="downloads_filter_active">Active</string>
+    <string name="downloads_filter_completed">Completed</string>
+    <string name="downloads_filter_failed">Failed</string>
+
+    <string name="downloads_status_queued">Queued</string>
+    <string name="downloads_status_running">Downloading</string>
+    <string name="downloads_status_paused">Paused</string>
+    <string name="downloads_status_completed">Completed</string>
+    <string name="downloads_status_failed">Failed</string>
+    <string name="downloads_status_cancelled">Cancelled</string>
+
+    <string name="downloads_progress_of">%1$s of %2$s</string>
+    <string name="downloads_remaining">%1$s left</string>
+    <string name="downloads_eta">ETA %1$s</string>
+    <string name="downloads_fragment">Fragment %1$s</string>
+    <string name="downloads_retry_count">Attempt %1$d</string>
+
+    <string name="downloads_detail_title">Download details</string>
+    <string name="downloads_detail_missing">This download no longer exists.</string>
+    <string name="downloads_detail_url">Link</string>
+    <string name="downloads_detail_output">Saved to</string>
+    <string name="downloads_detail_quality">Quality</string>
+    <string name="downloads_detail_format">Format</string>
+    <string name="downloads_detail_error">Error</string>
+    <string name="downloads_detail_created">Added</string>
+    <string name="downloads_detail_speed">Speed</string>
+    <string name="downloads_detail_downloaded">Downloaded</string>
+    <string name="downloads_detail_total">Total size</string>
+    <string name="downloads_detail_status">Status</string>
+    <string name="downloads_back">Back</string>
+
+    <string name="error_network">No internet connection. Check your network and retry.</string>
+    <string name="error_forbidden">The site refused the request (403). Adding cookies in Settings often fixes this.</string>
+    <string name="error_not_found">The media no longer exists (404).</string>
+    <string name="error_private">This media is private.</string>
+    <string name="error_age_restricted">This media is age restricted. Add cookies from a signed-in session in Settings.</string>
+    <string name="error_geo_restricted">This media is not available in your region. Try a proxy in Settings.</string>
+    <string name="error_captcha">The site asked for a CAPTCHA. Add cookies from a signed-in session in Settings.</string>
+    <string name="error_cookies_expired">Your cookies file has expired. Export it again and re-select it in Settings.</string>
+    <string name="error_disk_full">Not enough free space to finish this download.</string>
+    <string name="error_permission_denied">Access to the download folder was lost. Select it again in Settings.</string>
+    <string name="error_binary_missing">The download engine could not start. Reopen the app to retry.</string>
+    <string name="error_ffmpeg_missing">FFmpeg is unavailable, so this format cannot be produced.</string>
+    <string name="error_format_unavailable">The chosen format is no longer available. Analyze the link again.</string>
+    <string name="error_unsupported_url">This link is not supported.</string>
+    <string name="error_interrupted">The download was interrupted. Resume to continue.</string>
+    <string name="error_unknown">The download failed for an unknown reason.</string>
+
+</resources>

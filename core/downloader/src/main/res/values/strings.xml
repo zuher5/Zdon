@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Notification channels -->
+    <string name="notification_channel_progress_name">Download progress</string>
+    <string name="notification_channel_progress_description">Shows an ongoing notification while media is downloading.</string>
+    <string name="notification_channel_status_name">Download status</string>
+    <string name="notification_channel_status_description">Notifies you when a download finishes or fails.</string>
+
+    <!-- Foreground notification -->
+    <string name="notification_preparing_title">Preparing download</string>
+    <string name="notification_preparing_text">Starting the download engine…</string>
+    <string name="notification_completed_title">Download complete</string>
+    <string name="notification_failed_title">Download failed</string>
+    <string name="notification_eta">ETA %1$s</string>
+
+    <plurals name="notification_downloading_with_others">
+        <item quantity="one">%1$s (+%2$d more)</item>
+        <item quantity="other">%1$s (+%2$d more)</item>
+    </plurals>
+
+    <!-- Notification actions -->
+    <string name="action_pause">Pause</string>
+    <string name="action_resume">Resume</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_stop_all">Stop all</string>
+
+    <!-- Engine failure messages -->
+    <string name="error_no_download_folder">Choose a download folder in Settings before downloading.</string>
+    <string name="error_permission_denied">Access to the download folder was revoked. Select it again in Settings.</string>
+    <string name="error_disk_full">Not enough free space to save this download.</string>
+    <string name="error_nothing_produced">The download produced no output file.</string>
+    <string name="error_io">The file could not be written to the download folder.</string>
+
+</resources>

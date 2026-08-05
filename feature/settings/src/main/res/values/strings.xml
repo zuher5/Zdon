@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="settings_title">Settings</string>
+
+    <!-- Sections -->
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_section_storage">Storage</string>
+    <string name="settings_section_downloads">Downloads</string>
+    <string name="settings_section_output">Output</string>
+    <string name="settings_section_network">Network</string>
+    <string name="settings_section_engine">Engine</string>
+    <string name="settings_section_notifications">Notifications</string>
+
+    <!-- Appearance -->
+    <string name="settings_theme">Theme</string>
+    <string name="settings_dynamic_color">Dynamic color</string>
+    <string name="settings_dynamic_color_summary">Use colors from your wallpaper (Android 12 and newer).</string>
+    <string name="settings_dynamic_color_unsupported">Requires Android 12 or newer.</string>
+
+    <!-- Storage -->
+    <string name="settings_download_folder">Download folder</string>
+    <string name="settings_download_folder_none">Not selected</string>
+    <string name="settings_download_folder_summary">Zdon writes only to this folder, so no storage permission is required.</string>
+    <string name="settings_choose_folder">Choose</string>
+    <string name="settings_folder_denied">That folder could not be used. Pick another one.</string>
+
+    <!-- Downloads -->
+    <string name="settings_concurrent">Concurrent downloads</string>
+    <string name="settings_concurrent_value">%1$d at a time</string>
+    <string name="settings_retries">Maximum retries</string>
+    <string name="settings_retries_value">%1$d retries</string>
+    <string name="settings_default_quality">Default quality</string>
+    <string name="settings_default_audio_format">Default audio format</string>
+    <string name="settings_download_archive">Skip already downloaded</string>
+    <string name="settings_download_archive_summary">Keeps an archive file so a playlist is never fetched twice.</string>
+
+    <!-- Output -->
+    <string name="settings_output_template">File name template</string>
+    <string name="settings_output_template_summary">yt-dlp output template, for example %(title)s.%(ext)s</string>
+    <string name="settings_restrict_filenames">Safe file names</string>
+    <string name="settings_restrict_filenames_summary">Replaces characters that some file systems reject.</string>
+    <string name="settings_embed_metadata">Embed metadata</string>
+    <string name="settings_embed_thumbnail">Embed thumbnail</string>
+    <string name="settings_download_subtitles">Download subtitles</string>
+    <string name="settings_subtitle_languages">Subtitle languages</string>
+    <string name="settings_subtitle_languages_summary">Comma separated, for example en,es. Use all for every language.</string>
+
+    <!-- Network -->
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_summary">For example socks5://127.0.0.1:9050. Leave empty to disable.</string>
+    <string name="settings_cookies">Cookies file</string>
+    <string name="settings_cookies_none">Not selected</string>
+    <string name="settings_cookies_summary">Import cookies.txt for private, age-restricted or members-only content. Optional for public videos.</string>
+    <string name="settings_cookies_select">Import cookies</string>
+    <string name="settings_cookies_clear">Remove cookies</string>
+    <string name="settings_cookies_expired">Cookies may be expired. Download a fresh cookies.txt file.</string>
+    <string name="settings_headers">Custom HTTP headers</string>
+    <string name="settings_headers_summary">One Header: value pair per line.</string>
+
+    <!-- Engine -->
+    <string name="settings_ytdlp_version">yt-dlp version</string>
+    <string name="settings_ytdlp_version_unknown">Not initialized yet</string>
+    <string name="settings_ffmpeg_status">FFmpeg</string>
+    <string name="settings_ffmpeg_available">Available</string>
+    <string name="settings_ffmpeg_unavailable">Unavailable</string>
+    <string name="settings_auto_update_ytdlp">Auto-update yt-dlp</string>
+    <string name="settings_auto_update_ytdlp_summary">Checks daily on unmetered networks.</string>
+    <string name="settings_auto_update_ffmpeg">Refresh FFmpeg automatically</string>
+    <string name="settings_update_now">Update now</string>
+    <string name="settings_updating">Updating…</string>
+    <string name="settings_update_done">yt-dlp updated.</string>
+    <string name="settings_update_current">yt-dlp is already up to date.</string>
+    <string name="settings_update_failed">The update failed. Check your connection and retry.</string>
+    <string name="settings_engine_error">Engine error: %1$s</string>
+
+    <!-- Notifications -->
+    <string name="settings_notifications">Show notifications</string>
+    <string name="settings_notifications_summary">Progress and completion notifications.</string>
+    <string name="settings_notifications_blocked">Notifications are disabled for Zdon in system settings.</string>
+    <string name="settings_open_system_settings">Open system settings</string>
+
+    <!-- Misc -->
+    <string name="settings_clear_recent">Clear recent links</string>
+    <string name="settings_dialog_confirm">Save</string>
+    <string name="settings_dialog_dismiss">Cancel</string>
+
+</resources>
