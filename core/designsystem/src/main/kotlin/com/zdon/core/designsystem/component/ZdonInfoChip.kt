@@ -1,5 +1,6 @@
 package com.zdon.core.designsystem.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,20 +15,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
-/** Compact labelled chip used for metadata such as resolution, codec or size. */
+/**
+ * Compact metadata label. Defaults to a quiet outlined style so lists stay
+ * uncluttered; callers pass a filled [containerColor]/[contentColor] (with a
+ * neutral border suppressed) for emphasis such as error states.
+ */
 @Composable
 fun ZdonInfoChip(
     label: String,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
-    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    contentColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    containerColor: Color = Color.Transparent,
+    contentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
+    val filled = containerColor != Color.Transparent
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.small,
         color = containerColor,
         contentColor = contentColor,
+        border = if (filled) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),

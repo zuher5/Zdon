@@ -3,7 +3,6 @@ package com.zdon.feature.history
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -120,7 +119,6 @@ internal fun HistoryScreen(
                         top = 8.dp,
                         bottom = 32.dp,
                     ),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     item(key = "search") {
                         OutlinedTextField(

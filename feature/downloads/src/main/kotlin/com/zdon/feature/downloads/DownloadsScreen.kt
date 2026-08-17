@@ -117,7 +117,6 @@ internal fun DownloadsScreen(
                         top = 8.dp,
                         bottom = 32.dp,
                     ),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     item(key = "filters") {
                         FlowRow(

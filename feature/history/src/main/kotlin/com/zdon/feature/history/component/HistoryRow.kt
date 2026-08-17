@@ -2,8 +2,6 @@ package com.zdon.feature.history.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,7 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.PlayCircle
-import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,15 +22,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.zdon.core.common.util.Formatters
-import com.zdon.core.designsystem.component.ZdonInfoChip
 import com.zdon.core.designsystem.component.ZdonThumbnail
 import com.zdon.core.model.HistoryEntry
 import com.zdon.feature.history.R
 import java.text.DateFormat
 import java.util.Date
 
-/** One completed download in the history list. */
-@OptIn(ExperimentalLayoutApi::class)
+/** One completed download in the history list, separated by a hairline divider. */
 @Composable
 internal fun HistoryRow(
     entry: HistoryEntry,
@@ -41,9 +37,9 @@ internal fun HistoryRow(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Row(
@@ -87,18 +83,18 @@ internal fun HistoryRow(
                 }
             }
 
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                Formatters.formatBytesOrNull(entry.fileSizeBytes)?.let {
-                    ZdonInfoChip(label = it)
-                }
+            val caption = buildList {
+                Formatters.formatBytesOrNull(entry.fileSizeBytes)?.let(::add)
                 if (entry.wasAudioOnly) {
-                    ZdonInfoChip(label = stringResource(R.string.history_audio_only))
+                    add(stringResource(R.string.history_audio_only))
                 }
-                entry.extractor?.let { ZdonInfoChip(label = it) }
+            }
+            if (caption.isNotEmpty()) {
+                Text(
+                    text = caption.joinToString(" · "),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
 
             Row(
@@ -128,5 +124,7 @@ internal fun HistoryRow(
                 }
             }
         }
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }
 }

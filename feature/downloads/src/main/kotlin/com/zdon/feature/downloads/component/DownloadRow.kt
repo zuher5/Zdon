@@ -1,9 +1,8 @@
 package com.zdon.feature.downloads.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,7 +13,7 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,10 +35,10 @@ import com.zdon.feature.downloads.DownloadStrings
 import com.zdon.feature.downloads.R
 
 /**
- * One row in the download list: thumbnail, title, live progress and the actions
- * valid for the item's current status.
+ * One flat row in the download list: thumbnail, title, live progress and the
+ * actions valid for the item's current status. Rows are separated by a hairline
+ * divider instead of a filled card; secondary details are plain muted text.
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun DownloadRow(
     item: DownloadItem,
@@ -51,9 +50,12 @@ internal fun DownloadRow(
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(onClick = onClick, modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Row(
@@ -114,25 +116,28 @@ internal fun DownloadRow(
                 )
             }
 
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                item.currentFragment?.let { fragment ->
-                    ZdonInfoChip(label = stringResource(R.string.downloads_fragment, fragment))
-                }
+            val metaParts = buildList {
+                item.currentFragment?.let { add(stringResource(R.string.downloads_fragment, it)) }
                 if (item.retryCount > 0) {
-                    ZdonInfoChip(
-                        label = stringResource(R.string.downloads_retry_count, item.retryCount + 1),
-                    )
+                    add(stringResource(R.string.downloads_retry_count, item.retryCount + 1))
                 }
-                item.errorType?.let { errorType ->
-                    ZdonInfoChip(
-                        label = stringResource(DownloadStrings.errorLabel(errorType)),
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                    )
+            }
+            if (item.errorType != null || metaParts.isNotEmpty()) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    item.errorType?.let { errorType ->
+                        ZdonInfoChip(
+                            label = stringResource(DownloadStrings.errorLabel(errorType)),
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                        )
+                    }
+                    if (metaParts.isNotEmpty()) {
+                        Text(
+                            text = metaParts.joinToString(" · "),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
 
@@ -189,6 +194,8 @@ internal fun DownloadRow(
                 }
             }
         }
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 
@@ -196,7 +203,7 @@ private fun progressLeadingLabel(item: DownloadItem): String {
     val downloaded = Formatters.formatBytes(item.downloadedBytes)
     val total = Formatters.formatBytesOrNull(item.totalBytes)
     return if (total != null) {
-        "$$downloaded / $total"
+        "$downloaded / $total"
     } else {
         downloaded
     }
@@ -217,7 +224,7 @@ private fun progressTrailingLabel(item: DownloadItem): String {
 
 @Composable
 private fun DownloadStatus.statusColor() = when (this) {
-    DownloadStatus.COMPLETED -> MaterialTheme.colorScheme.primary
+    DownloadStatus.COMPLETED -> MaterialTheme.colorScheme.onSurfaceVariant
     DownloadStatus.FAILED, DownloadStatus.CANCELLED -> MaterialTheme.colorScheme.error
-    else -> MaterialTheme.colorScheme.onSurfaceVariant
+    else -> MaterialTheme.colorScheme.primary
 }
