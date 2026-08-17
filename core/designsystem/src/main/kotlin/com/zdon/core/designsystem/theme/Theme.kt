@@ -78,14 +78,15 @@ private val DarkColorScheme = darkColorScheme(
 /**
  * Root theme.
  *
- * Dynamic color is applied on Android 12+ when the user opts in; older releases
- * fall back to the static palette. The theme takes an explicit [ThemeMode] so the
- * setting is honoured without reading preferences from inside the composable.
+ * Dynamic color is opt-in (default off) so the app keeps a consistent minimal
+ * palette; the user can enable Material You from Settings. The theme takes an
+ * explicit [ThemeMode] so the setting is honoured without reading preferences
+ * from inside the composable.
  */
 @Composable
 fun ZdonTheme(
     themeMode: ThemeMode = ThemeMode.SYSTEM,
-    useDynamicColor: Boolean = true,
+    useDynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val darkTheme = when (themeMode) {
