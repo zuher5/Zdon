@@ -2,27 +2,30 @@ package com.zdon.feature.home
 
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.FolderOpen
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -155,23 +158,13 @@ internal fun HomeScreen(
 
         if (!state.hasDownloadFolder) {
             item(key = "folder-warning") {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                    ),
-                ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        ZdonEmptyState(
-                            icon = Icons.Rounded.FolderOpen,
-                            title = stringResource(R.string.home_no_folder_title),
-                            description = stringResource(R.string.home_no_folder_description),
-                            actionLabel = stringResource(R.string.home_choose_folder),
-                            onActionClick = onChooseFolder,
-                        )
-                    }
-                }
+                HomeNotice(
+                    icon = Icons.Rounded.FolderOpen,
+                    title = stringResource(R.string.home_no_folder_title),
+                    description = stringResource(R.string.home_no_folder_description),
+                    actionLabel = stringResource(R.string.home_choose_folder),
+                    onActionClick = onChooseFolder,
+                )
             }
         }
 
@@ -193,24 +186,11 @@ internal fun HomeScreen(
 
         state.analyzeError?.let { message ->
             item(key = "analyze-error") {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                    ),
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.home_analysis_failed_title),
-                            style = MaterialTheme.typography.titleSmall,
-                        )
-                        Text(text = message, style = MaterialTheme.typography.bodyMedium)
-                    }
-                }
+                HomeNotice(
+                    icon = Icons.Rounded.ErrorOutline,
+                    title = stringResource(R.string.home_analysis_failed_title),
+                    description = message,
+                )
             }
         }
 
@@ -259,6 +239,7 @@ internal fun HomeScreen(
                     Text(
                         text = stringResource(R.string.home_video_formats_title),
                         style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 items(
@@ -278,6 +259,7 @@ internal fun HomeScreen(
                     Text(
                         text = stringResource(R.string.home_audio_formats_title),
                         style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 items(
@@ -312,4 +294,57 @@ private fun Context.readClipboardText(): String? {
     val clip = clipboard.primaryClip ?: return null
     if (clip.itemCount == 0) return null
     return clip.getItemAt(0).coerceToText(this).toString().trim().takeIf { it.isNotEmpty() }
+}
+
+/**
+ * Quiet single-line alert used for non-blocking warnings and analysis errors:
+ * slim, no card chrome, optional trailing action.
+ */
+@Composable
+private fun HomeNotice(
+    icon: ImageVector,
+    title: String,
+    description: String,
+    modifier: Modifier = Modifier,
+    actionLabel: String? = null,
+    onActionClick: (() -> Unit)? = null,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.small,
+        color = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(imageVector = icon, contentDescription = null)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            if (actionLabel != null && onActionClick != null) {
+                Text(
+                    text = actionLabel,
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.small)
+                        .clickable(onClick = onActionClick)
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                )
+            }
+        }
+    }
 }

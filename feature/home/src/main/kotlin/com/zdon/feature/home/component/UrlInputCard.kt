@@ -73,6 +73,13 @@ internal fun UrlInputCard(
                             contentDescription = stringResource(R.string.home_clear_url),
                         )
                     }
+                } else {
+                    IconButton(onClick = onPasteClick) {
+                        Icon(
+                            imageVector = Icons.Rounded.ContentPaste,
+                            contentDescription = stringResource(R.string.home_paste),
+                        )
+                    }
                 }
             },
             keyboardOptions = KeyboardOptions(
@@ -86,22 +93,6 @@ internal fun UrlInputCard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            OutlinedButton(
-                onClick = onPasteClick,
-                modifier = Modifier.weight(1f),
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.ContentPaste,
-                    contentDescription = null,
-                )
-                Text(
-                    text = stringResource(R.string.home_paste),
-                    modifier = Modifier.padding(start = 8.dp),
-                    maxLines = 1,
-                    softWrap = false,
-                )
-            }
-
             OutlinedButton(
                 onClick = onAnalyzeClick,
                 enabled = canAnalyze && !isAnalyzing,

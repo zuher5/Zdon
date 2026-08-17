@@ -16,8 +16,8 @@ import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -146,73 +146,68 @@ private fun DownloadDetailContent(
             trailingLabel = Formatters.formatSpeedOrNull(item.speedBytesPerSecond),
         )
 
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                DetailRow(
-                    label = stringResource(R.string.downloads_detail_status),
-                    value = stringResource(DownloadStrings.statusLabel(item.status)),
+        Column(modifier = Modifier.fillMaxWidth()) {
+            DetailField(
+                label = stringResource(R.string.downloads_detail_status),
+                value = stringResource(DownloadStrings.statusLabel(item.status)),
+            )
+            DetailField(
+                label = stringResource(R.string.downloads_detail_downloaded),
+                value = Formatters.formatBytes(item.downloadedBytes),
+            )
+            DetailField(
+                label = stringResource(R.string.downloads_detail_total),
+                value = Formatters.formatBytesOrNull(item.totalBytes)
+                    ?: stringResource(R.string.downloads_status_queued),
+            )
+            if (item.remainingBytes > 0L) {
+                DetailField(
+                    label = stringResource(R.string.downloads_remaining, ""),
+                    value = Formatters.formatBytes(item.remainingBytes),
                 )
-                DetailRow(
-                    label = stringResource(R.string.downloads_detail_downloaded),
-                    value = Formatters.formatBytes(item.downloadedBytes),
+            }
+            if (item.etaSeconds > 0L) {
+                DetailField(
+                    label = stringResource(R.string.downloads_detail_speed),
+                    value = Formatters.formatDuration(item.etaSeconds),
                 )
-                DetailRow(
-                    label = stringResource(R.string.downloads_detail_total),
-                    value = Formatters.formatBytesOrNull(item.totalBytes)
-                        ?: stringResource(R.string.downloads_status_queued),
+            }
+            item.currentFragment?.let { fragment ->
+                DetailField(
+                    label = stringResource(R.string.downloads_fragment, ""),
+                    value = fragment,
                 )
-                if (item.remainingBytes > 0L) {
-                    DetailRow(
-                        label = stringResource(R.string.downloads_remaining, ""),
-                        value = Formatters.formatBytes(item.remainingBytes),
-                    )
-                }
-                if (item.etaSeconds > 0L) {
-                    DetailRow(
-                        label = stringResource(R.string.downloads_detail_speed),
-                        value = Formatters.formatDuration(item.etaSeconds),
-                    )
-                }
-                item.currentFragment?.let { fragment ->
-                    DetailRow(
-                        label = stringResource(R.string.downloads_fragment, ""),
-                        value = fragment,
-                    )
-                }
-                DetailRow(
-                    label = stringResource(R.string.downloads_detail_quality),
-                    value = item.quality.label,
+            }
+            DetailField(
+                label = stringResource(R.string.downloads_detail_quality),
+                value = item.quality.label,
+            )
+            item.formatId?.let { formatId ->
+                DetailField(
+                    label = stringResource(R.string.downloads_detail_format),
+                    value = formatId,
                 )
-                item.formatId?.let { formatId ->
-                    DetailRow(
-                        label = stringResource(R.string.downloads_detail_format),
-                        value = formatId,
-                    )
-                }
-                DetailRow(
-                    label = stringResource(R.string.downloads_detail_url),
-                    value = item.url,
+            }
+            DetailField(
+                label = stringResource(R.string.downloads_detail_url),
+                value = item.url,
+            )
+            item.outputFileName?.let { fileName ->
+                DetailField(
+                    label = stringResource(R.string.downloads_detail_output),
+                    value = fileName,
                 )
-                item.outputFileName?.let { fileName ->
-                    DetailRow(
-                        label = stringResource(R.string.downloads_detail_output),
-                        value = fileName,
-                    )
-                }
-                DetailRow(
-                    label = stringResource(R.string.downloads_detail_created),
-                    value = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
-                        .format(Date(item.createdAtMillis)),
+            }
+            DetailField(
+                label = stringResource(R.string.downloads_detail_created),
+                value = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                    .format(Date(item.createdAtMillis)),
+            )
+            item.errorType?.let { errorType ->
+                DetailField(
+                    label = stringResource(R.string.downloads_detail_error),
+                    value = stringResource(DownloadStrings.errorLabel(errorType)),
                 )
-                item.errorType?.let { errorType ->
-                    DetailRow(
-                        label = stringResource(R.string.downloads_detail_error),
-                        value = stringResource(DownloadStrings.errorLabel(errorType)),
-                    )
-                }
             }
         }
 
@@ -281,9 +276,19 @@ private fun DownloadDetailContent(
 }
 
 @Composable
+private fun DetailField(label: String, value: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        DetailRow(label = label, value = value)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+    }
+}
+
+@Composable
 private fun DetailRow(label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(

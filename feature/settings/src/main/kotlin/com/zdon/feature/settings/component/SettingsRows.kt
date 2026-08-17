@@ -26,7 +26,7 @@ internal fun SettingsSectionHeader(
             .fillMaxWidth()
             .padding(start = 4.dp, end = 4.dp, top = 16.dp, bottom = 4.dp),
         style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
 
@@ -90,7 +90,7 @@ internal fun SettingsValueRow(
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         summary?.let {
             Text(
