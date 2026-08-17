@@ -30,6 +30,8 @@
     <string name="settings_concurrent_value">%1$d at a time</string>
     <string name="settings_retries">Maximum retries</string>
     <string name="settings_retries_value">%1$d retries</string>
+    <string name="settings_auto_resume">Resume after reboot</string>
+    <string name="settings_auto_resume_summary">Automatically continue downloads that were interrupted when the device restarted.</string>
     <string name="settings_default_quality">Default quality</string>
     <string name="settings_default_audio_format">Default audio format</string>
     <string name="settings_download_archive">Skip already downloaded</string>

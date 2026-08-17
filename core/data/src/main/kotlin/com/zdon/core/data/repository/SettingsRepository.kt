@@ -57,6 +57,8 @@ interface SettingsRepository {
 
     suspend fun setRestrictFilenames(enabled: Boolean)
 
+    suspend fun setAutoResumeAfterBoot(enabled: Boolean)
+
     suspend fun clearRecentUrls()
 
     /** True when the app still holds a writable grant for the saved folder. */

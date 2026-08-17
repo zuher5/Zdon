@@ -1,9 +1,11 @@
 package com.zdon.core.data.repository
 
+import android.content.Context
 import com.zdon.core.common.di.Dispatcher
 import com.zdon.core.common.di.ZdonDispatcher
 import com.zdon.core.common.url.UrlValidationResult
 import com.zdon.core.common.url.UrlValidator
+import com.zdon.core.data.R
 import com.zdon.core.datastore.UserPreferencesDataSource
 import com.zdon.core.downloader.storage.CookieFileProvider
 import com.zdon.core.downloader.storage.DownloadStorageManager
@@ -15,6 +17,7 @@ import com.zdon.core.model.BinaryUpdateResult
 import com.zdon.core.model.DownloadErrorType
 import com.zdon.core.model.EngineStatus
 import com.zdon.core.model.UserPreferences
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -28,6 +31,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class MediaRepositoryImpl @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val engine: YtDlpEngine,
     private val initializer: YtDlpInitializer,
     private val preferences: UserPreferencesDataSource,
@@ -42,7 +46,7 @@ class MediaRepositoryImpl @Inject constructor(
             if (validation is UrlValidationResult.Invalid) {
                 return@withContext AnalyzeResult.Failure(
                     DownloadErrorType.UNSUPPORTED_URL,
-                    INVALID_URL_MESSAGE,
+                    context.getString(R.string.media_invalid_url),
                 )
             }
             val normalizedUrl = (validation as UrlValidationResult.Valid).url
@@ -98,6 +102,5 @@ class MediaRepositoryImpl @Inject constructor(
     private companion object {
         const val ANALYZE_WORKSPACE_ID = 0L
         const val ANALYZE_RETRIES = 2
-        const val INVALID_URL_MESSAGE = "That does not look like a valid media link"
     }
 }

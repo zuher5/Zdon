@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Engine status / error messages shown to the user -->
+    <string name="engine_error_binary_missing">yt-dlp is not available</string>
+    <string name="engine_error_ffmpeg_missing">FFmpeg is required for this download but is unavailable</string>
+    <string name="engine_error_unknown">Download failed</string>
+    <string name="engine_error_unparseable_metadata">Could not read media information</string>
+    <string name="engine_error_interrupted">Download interrupted</string>
+
+</resources>

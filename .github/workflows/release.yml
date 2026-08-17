@@ -31,8 +31,21 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      # ZDON_KEYSTORE must be the *base64-encoded* contents of a JKS keystore.
+      - name: Configure release signing
+        if: ${{ secrets.ZDON_KEYSTORE != '' }}
+        env:
+          ZDON_KEYSTORE: ${{ secrets.ZDON_KEYSTORE }}
+        run: |
+          echo "$ZDON_KEYSTORE" | base64 --decode > "$RUNNER_TEMP/zdon-release.keystore"
+          echo "ZDON_KEYSTORE_PATH=$RUNNER_TEMP/zdon-release.keystore" >> "$GITHUB_ENV"
+
       - name: Build release
         run: ./gradlew assembleRelease --stacktrace
+        env:
+          ZDON_STORE_PASSWORD: ${{ secrets.ZDON_STORE_PASSWORD }}
+          ZDON_KEY_ALIAS: ${{ secrets.ZDON_KEY_ALIAS }}
+          ZDON_KEY_PASSWORD: ${{ secrets.ZDON_KEY_PASSWORD }}
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2

@@ -32,5 +32,6 @@
     <string name="error_disk_full">Not enough free space to save this download.</string>
     <string name="error_nothing_produced">The download produced no output file.</string>
     <string name="error_io">The file could not be written to the download folder.</string>
+    <string name="error_network_unavailable">No internet connection.</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.zdon.core.engine
 
+import android.content.Context
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLException
 import com.zdon.core.common.di.Dispatcher
@@ -9,6 +10,7 @@ import com.zdon.core.model.DownloadOutcome
 import com.zdon.core.model.DownloadProgress
 import com.zdon.core.model.DownloadRequest
 import com.zdon.core.model.MediaInfo
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.NonCancellable
@@ -29,6 +31,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class YtDlpEngine @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val initializer: YtDlpInitializer,
     private val commandBuilder: YtDlpCommandBuilder,
     @Dispatcher(ZdonDispatcher.IO) private val ioDispatcher: CoroutineDispatcher,
@@ -48,7 +51,8 @@ class YtDlpEngine @Inject constructor(
         if (!status.isInitialized) {
             return@withContext MediaInfoResult.Failure(
                 DownloadErrorType.BINARY_MISSING,
-                status.initializationError ?: BINARY_ERROR,
+                status.initializationError
+                    ?: context.getString(R.string.engine_error_binary_missing),
             )
         }
 
@@ -76,14 +80,21 @@ class YtDlpEngine @Inject constructor(
             Timber.e(exception, "yt-dlp analysis failed for %s\n%s", url, exception.message)
             MediaInfoResult.Failure(
                 ErrorClassifier.classify(exception.message),
-                ErrorClassifier.extractPrimaryMessage(exception.message) ?: UNKNOWN_ERROR,
+                ErrorClassifier.extractPrimaryMessage(exception.message)
+                    ?: context.getString(R.string.engine_error_unknown),
             )
         } catch (exception: JSONException) {
             Timber.e(exception, "Malformed yt-dlp JSON for %s", url)
-            MediaInfoResult.Failure(DownloadErrorType.UNKNOWN, UNPARSEABLE_METADATA)
+            MediaInfoResult.Failure(
+                DownloadErrorType.UNKNOWN,
+                context.getString(R.string.engine_error_unparseable_metadata),
+            )
         } catch (exception: InterruptedException) {
             destroyQuietly(processId)
-            MediaInfoResult.Failure(DownloadErrorType.INTERRUPTED, exception.message ?: UNKNOWN_ERROR)
+            MediaInfoResult.Failure(
+                DownloadErrorType.INTERRUPTED,
+                exception.message ?: context.getString(R.string.engine_error_interrupted),
+            )
         }
     }
 
@@ -104,13 +115,14 @@ class YtDlpEngine @Inject constructor(
         if (!status.isInitialized) {
             return@withContext DownloadOutcome.Failure(
                 DownloadErrorType.BINARY_MISSING,
-                status.initializationError ?: BINARY_ERROR,
+                status.initializationError
+                    ?: context.getString(R.string.engine_error_binary_missing),
             )
         }
         if (request.requiresFfmpeg && !status.isFfmpegAvailable) {
             return@withContext DownloadOutcome.Failure(
                 DownloadErrorType.FFMPEG_MISSING,
-                FFMPEG_ERROR,
+                context.getString(R.string.engine_error_ffmpeg_missing),
             )
         }
 
@@ -152,13 +164,14 @@ class YtDlpEngine @Inject constructor(
             Timber.e(exception, "yt-dlp download %d failed\n%s", downloadId, message)
             DownloadOutcome.Failure(
                 ErrorClassifier.classify(message),
-                ErrorClassifier.extractPrimaryMessage(message) ?: UNKNOWN_ERROR,
+                ErrorClassifier.extractPrimaryMessage(message)
+                    ?: context.getString(R.string.engine_error_unknown),
             )
         } catch (exception: InterruptedException) {
             destroyQuietly(processId)
             DownloadOutcome.Failure(
                 DownloadErrorType.INTERRUPTED,
-                exception.message ?: INTERRUPTED_ERROR,
+                exception.message ?: context.getString(R.string.engine_error_interrupted),
             )
         }
     }
@@ -174,14 +187,6 @@ class YtDlpEngine @Inject constructor(
     } catch (exception: IllegalStateException) {
         Timber.w(exception, "Unable to destroy process %s", processId)
         false
-    }
-
-    private companion object {
-        const val BINARY_ERROR = "yt-dlp is not available"
-        const val FFMPEG_ERROR = "FFmpeg is required for this download but is unavailable"
-        const val UNKNOWN_ERROR = "Download failed"
-        const val UNPARSEABLE_METADATA = "Could not read media information"
-        const val INTERRUPTED_ERROR = "Download interrupted"
     }
 }
 

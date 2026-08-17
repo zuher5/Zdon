@@ -44,6 +44,7 @@ fun ZdonApp(
     onChooseFolder: () -> Unit,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
+    initialSharedUrl: String? = null,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -110,6 +111,7 @@ fun ZdonApp(
             Box(modifier = Modifier.fillMaxSize()) {
                 ZdonNavHost(
                     navController = navController,
+                    initialSharedUrl = initialSharedUrl,
                     onChooseFolder = onChooseFolder,
                     onShowMessage = showMessage,
                 )

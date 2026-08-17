@@ -26,6 +26,7 @@ fun ZdonNavHost(
     onChooseFolder: () -> Unit,
     onShowMessage: (String) -> Unit,
     modifier: Modifier = Modifier,
+    initialSharedUrl: String? = null,
 ) {
     NavHost(
         navController = navController,
@@ -34,6 +35,7 @@ fun ZdonNavHost(
     ) {
         composable(route = ZdonRoutes.HOME) {
             HomeRoute(
+                initialSharedUrl = initialSharedUrl,
                 onChooseFolder = onChooseFolder,
                 onShowMessage = onShowMessage,
             )

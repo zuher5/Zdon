@@ -109,6 +109,9 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun setRestrictFilenames(enabled: Boolean) =
         dataSource.setRestrictFilenames(enabled)
 
+    override suspend fun setAutoResumeAfterBoot(enabled: Boolean) =
+        dataSource.setAutoResumeAfterBoot(enabled)
+
     override suspend fun clearRecentUrls() = dataSource.clearRecentUrls()
 
     override suspend fun hasWritableDownloadLocation(): Boolean = withContext(ioDispatcher) {

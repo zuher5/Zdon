@@ -43,6 +43,9 @@ import com.zdon.feature.home.component.UrlInputCard
 /**
  * Home route. Owns clipboard access and delegates every state change to
  * [HomeViewModel], keeping the composable free of business logic.
+ *
+ * [initialSharedUrl] is a URL shared into the app from another application; it
+ * is pasted and analysed once, the first time this screen is composed.
  */
 @Composable
 fun HomeRoute(
@@ -50,10 +53,17 @@ fun HomeRoute(
     onShowMessage: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
+    initialSharedUrl: String? = null,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboardEmptyMessage = stringResource(R.string.home_clipboard_empty)
+
+    androidx.compose.runtime.LaunchedEffect(viewModel, initialSharedUrl) {
+        if (!initialSharedUrl.isNullOrBlank()) {
+            viewModel.onSharedUrlProvided(initialSharedUrl)
+        }
+    }
 
     androidx.compose.runtime.LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->

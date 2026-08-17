@@ -10,6 +10,7 @@
     <string name="home_analyze">Analyze</string>
     <string name="home_download">Download</string>
     <string name="home_clipboard_empty">The clipboard does not contain a link.</string>
+    <string name="home_enqueue_failed">Could not start the download</string>
 
     <!-- Validation -->
     <string name="home_error_malformed_url">That link does not look complete.</string>

@@ -39,8 +39,11 @@ interface DownloadDao {
     @Query("SELECT * FROM downloads WHERE id = :id")
     suspend fun getById(id: Long): DownloadEntity?
 
-    @Query("SELECT * FROM downloads WHERE status = 'QUEUED' ORDER BY created_at ASC LIMIT :limit")
+    @Query("SELECT id FROM downloads WHERE status = 'QUEUED' ORDER BY created_at ASC LIMIT :limit")
     suspend fun getNextQueued(limit: Int): List<DownloadEntity>
+
+    @Query("SELECT id FROM downloads")
+    suspend fun getAllIds(): List<Long>
 
     @Query("SELECT COUNT(*) FROM downloads WHERE status = 'RUNNING'")
     suspend fun countRunning(): Int
@@ -156,6 +159,8 @@ interface DownloadDao {
         UPDATE downloads SET
             status = 'QUEUED',
             progress_percent = 0.0,
+            downloaded_bytes = 0,
+            total_bytes = 0,
             speed_bytes_per_second = 0,
             eta_seconds = -1,
             current_fragment = NULL,
@@ -183,6 +188,27 @@ interface DownloadDao {
         """,
     )
     suspend fun demoteOrphanedRunning(updatedAt: Long): Int
+
+    /**
+     * Alternative recovery for [demoteOrphanedRunning]: rows left in `RUNNING`
+     * are requeued so they resume automatically (the "resume after reboot"
+     * setting) instead of waiting on the user to resume them manually.
+     */
+    @Query(
+        """
+        UPDATE downloads SET
+            status = 'QUEUED',
+            progress_percent = 0.0,
+            downloaded_bytes = 0,
+            total_bytes = 0,
+            speed_bytes_per_second = 0,
+            eta_seconds = -1,
+            current_fragment = NULL,
+            updated_at = :updatedAt
+        WHERE status = 'RUNNING'
+        """,
+    )
+    suspend fun requeueOrphanedRunning(updatedAt: Long): Int
 
     @Query("DELETE FROM downloads WHERE id = :id")
     suspend fun deleteById(id: Long)

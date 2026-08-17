@@ -1,5 +1,6 @@
 package com.zdon.feature.home
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zdon.core.common.url.UrlError
@@ -14,6 +15,7 @@ import com.zdon.core.model.DownloadRequest
 import com.zdon.core.model.MediaInfo
 import com.zdon.core.model.VideoQuality
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,6 +38,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val mediaRepository: MediaRepository,
     private val downloadRepository: DownloadRepository,
     private val settingsRepository: SettingsRepository,
@@ -78,6 +81,20 @@ class HomeViewModel @Inject constructor(
     fun onUrlPasted(value: String) {
         onUrlChanged(value)
         if (_uiState.value.isUrlValid) analyze()
+    }
+
+    private var lastSharedUrl: String? = null
+
+    /**
+     * Consumes a URL shared into the app from another application. The URL is
+     * pasted and analysed exactly once per distinct value, so recomposing the
+     * home screen (e.g. switching tabs) never re-runs the analysis while a new
+     * share still gets through.
+     */
+    fun onSharedUrlProvided(url: String) {
+        if (url == lastSharedUrl) return
+        lastSharedUrl = url
+        onUrlPasted(url)
     }
 
     fun onRecentUrlSelected(url: String) {
@@ -126,11 +143,13 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onQualitySelected(quality: VideoQuality) {
-        _uiState.update {
-            it.copy(
+        _uiState.update { state ->
+            state.copy(
                 selectedQuality = quality,
                 selectedFormatId = null,
-                extractAudio = quality.isAudioOnly || it.extractAudio && quality.isAudioOnly,
+                // Choosing an audio-only quality forces extraction; for video
+                // qualities the user's extract-audio toggle is kept as-is.
+                extractAudio = quality.isAudioOnly,
             )
         }
     }
@@ -202,7 +221,9 @@ class HomeViewModel @Inject constructor(
                 Timber.e(throwable, "Failed to enqueue download")
                 _uiState.update { it.copy(isEnqueueing = false) }
                 _events.tryEmit(
-                    HomeEvent.ShowMessage(throwable.message ?: ENQUEUE_FAILED_MESSAGE),
+                    HomeEvent.ShowMessage(
+                        throwable.message ?: context.getString(R.string.home_enqueue_failed),
+                    ),
                 )
             }
         }
@@ -317,6 +338,5 @@ class HomeViewModel @Inject constructor(
     private companion object {
         const val EVENT_BUFFER = 4
         const val MAX_SUBTITLE_LANGUAGES = 3
-        const val ENQUEUE_FAILED_MESSAGE = "Could not start the download"
     }
 }

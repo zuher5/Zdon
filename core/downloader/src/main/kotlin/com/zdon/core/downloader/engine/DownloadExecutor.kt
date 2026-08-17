@@ -8,7 +8,9 @@ import com.zdon.core.database.dao.HistoryDao
 import com.zdon.core.database.entity.HistoryEntity
 import com.zdon.core.datastore.UserPreferencesDataSource
 import com.zdon.core.downloader.R
+import com.zdon.core.downloader.mapper.toDomain
 import com.zdon.core.downloader.mapper.toRequest
+import com.zdon.core.downloader.notification.DownloadNotificationBuilder
 import com.zdon.core.downloader.storage.CookieFileProvider
 import com.zdon.core.downloader.storage.DownloadStorageManager
 import com.zdon.core.downloader.storage.PublishError
@@ -48,6 +50,7 @@ class DownloadExecutor @Inject constructor(
     private val storageManager: DownloadStorageManager,
     private val cookieFileProvider: CookieFileProvider,
     private val networkMonitor: NetworkMonitor,
+    private val notificationBuilder: DownloadNotificationBuilder,
 ) {
 
     /**
@@ -81,7 +84,7 @@ class DownloadExecutor @Inject constructor(
             return failWith(
                 downloadId = downloadId,
                 errorType = DownloadErrorType.NETWORK,
-                message = NETWORK_UNAVAILABLE,
+                message = context.getString(R.string.error_network_unavailable),
                 retryCount = entity.retryCount,
             )
         }
@@ -211,6 +214,7 @@ class DownloadExecutor @Inject constructor(
                     )
                 }
                 storageManager.clearWorkspace(downloadId)
+                notifyTerminal(downloadId)
                 DownloadStatus.COMPLETED
             }
         }
@@ -230,7 +234,19 @@ class DownloadExecutor @Inject constructor(
             retryCount = retryCount,
             updatedAt = System.currentTimeMillis(),
         )
+        notifyTerminal(downloadId)
         return DownloadStatus.FAILED
+    }
+
+    /**
+     * Posts the per-download "completed"/"failed" notification. The foreground
+     * service notification disappears as soon as the queue drains, so without
+     * this the user would never learn the outcome of a download they started
+     * and left.
+     */
+    private suspend fun notifyTerminal(downloadId: Long) {
+        val item = downloadDao.getById(downloadId)?.toDomain() ?: return
+        notificationBuilder.notifyFinished(item, notificationBuilder.launchContentIntent())
     }
 
     private suspend fun buildOptions(
@@ -277,6 +293,5 @@ class DownloadExecutor @Inject constructor(
 
     private companion object {
         const val PROCESS_PREFIX = "zdon-download-"
-        const val NETWORK_UNAVAILABLE = "No internet connection"
     }
 }

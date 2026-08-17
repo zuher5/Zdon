@@ -9,6 +9,7 @@ import com.zdon.core.downloader.ZdonDownloadManager
 import com.zdon.core.downloader.engine.DownloadExecutor
 import com.zdon.core.downloader.mapper.toDomain
 import com.zdon.core.downloader.mapper.toEntity
+import com.zdon.core.downloader.storage.DownloadStorageManager
 import com.zdon.core.model.DownloadItem
 import com.zdon.core.model.DownloadRequest
 import com.zdon.core.model.DownloadStatus
@@ -40,6 +41,7 @@ class DownloadManagerImpl @Inject constructor(
     private val downloadDao: DownloadDao,
     private val executor: DownloadExecutor,
     private val preferences: UserPreferencesDataSource,
+    private val storageManager: DownloadStorageManager,
     @ApplicationScope private val scope: CoroutineScope,
     @Dispatcher(ZdonDispatcher.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : ZdonDownloadManager {
@@ -73,11 +75,16 @@ class DownloadManagerImpl @Inject constructor(
         }
 
     override suspend fun pause(id: Long) = withContext(ioDispatcher) {
-        // Cancelling the job makes the executor mark the row as PAUSED.
-        activeJobs.remove(id)?.cancel()
+        // Cancelling the job makes the executor mark the row as PAUSED. The job
+        // is joined first so that write has completed before the one below runs;
+        // without the join the two writes race and the final state is
+        // nondeterministic.
+        val job = activeJobs.remove(id)
+        job?.cancel()
         executor.terminate(id)
+        job?.join()
         val current = downloadDao.getById(id)
-        if (current != null && current.status != DownloadStatus.PAUSED) {
+        if (current != null && !current.status.isTerminal) {
             downloadDao.markStopped(id, DownloadStatus.PAUSED, System.currentTimeMillis())
         }
         pump()
@@ -91,9 +98,18 @@ class DownloadManagerImpl @Inject constructor(
     }
 
     override suspend fun cancel(id: Long) = withContext(ioDispatcher) {
-        activeJobs.remove(id)?.cancel()
+        // Same join as [pause]: the executor writes PAUSED from its
+        // NonCancellable block when cancelled, so we wait for that before
+        // writing CANCELLED. Guarding on the current status also prevents a
+        // cancel that arrives after completion from demoting a COMPLETED row.
+        val job = activeJobs.remove(id)
+        job?.cancel()
         executor.terminate(id)
-        downloadDao.markStopped(id, DownloadStatus.CANCELLED, System.currentTimeMillis())
+        job?.join()
+        val current = downloadDao.getById(id)
+        if (current != null && !current.status.isTerminal) {
+            downloadDao.markStopped(id, DownloadStatus.CANCELLED, System.currentTimeMillis())
+        }
         pump()
     }
 
@@ -108,22 +124,43 @@ class DownloadManagerImpl @Inject constructor(
     }
 
     override suspend fun remove(id: Long) = withContext(ioDispatcher) {
-        activeJobs.remove(id)?.cancel()
+        val job = activeJobs.remove(id)
+        job?.cancel()
         executor.terminate(id)
+        job?.join()
+        // Remove the row and its on-disk workspace so a failed download's
+        // `.part` files cannot accumulate in app-private storage.
+        storageManager.clearWorkspace(id)
         downloadDao.deleteById(id)
         pump()
     }
 
     override suspend fun clearFinished() = withContext(ioDispatcher) {
         downloadDao.deleteFinished()
+        sweepOrphanedWorkspaces()
     }
 
     override suspend fun recoverAfterProcessDeath() = withContext(ioDispatcher) {
-        val demoted = downloadDao.demoteOrphanedRunning(System.currentTimeMillis())
-        if (demoted > 0) {
-            Timber.i("Recovered %d download(s) interrupted by process death", demoted)
+        val recovered = if (preferences.currentPreferences().autoResumeAfterBoot) {
+            downloadDao.requeueOrphanedRunning(System.currentTimeMillis())
+        } else {
+            downloadDao.demoteOrphanedRunning(System.currentTimeMillis())
         }
+        if (recovered > 0) {
+            Timber.i("Recovered %d download(s) interrupted by process death", recovered)
+        }
+        sweepOrphanedWorkspaces()
         pump()
+    }
+
+    /**
+     * Deletes staging directories whose download row no longer exists. Runs on
+     * startup and after rows are removed, so `.part` files left behind by a
+     * failed or deleted download cannot pile up in app-private storage.
+     */
+    private suspend fun sweepOrphanedWorkspaces() {
+        val knownIds = downloadDao.getAllIds().toSet()
+        storageManager.clearOrphanedWorkspaces(knownIds)
     }
 
     override suspend fun statusOf(id: Long): DownloadStatus? =

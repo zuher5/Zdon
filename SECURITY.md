@@ -64,5 +64,9 @@ Users should be aware that:
 - Custom headers and proxy settings are stored locally in DataStore
 - Downloaded files are written to a user-selected directory via the Storage
   Access Framework
-- Release builds are signed with a debug key by default; produce your own signing
-  configuration for distribution builds
+- Release builds fall back to a debug key when no signing configuration is
+  present; for distribution, build with the `ZDON_KEYSTORE_PATH`,
+  `ZDON_STORE_PASSWORD`, `ZDON_KEY_ALIAS` and `ZDON_KEY_PASSWORD` properties or
+  environment variables, and provide them as GitHub Secrets (`ZDON_KEYSTORE`
+  base64-encoded) in the release workflow so every published APK shares one
+  permanent signature

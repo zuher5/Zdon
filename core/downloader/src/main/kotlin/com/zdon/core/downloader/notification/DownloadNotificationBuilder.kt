@@ -144,6 +144,22 @@ class DownloadNotificationBuilder @Inject constructor(
         notificationManager.cancel(DownloadNotifications.completionNotificationId(downloadId))
     }
 
+    /**
+     * Content intent that opens the app. Used by the per-download terminal
+     * notifications posted from [com.zdon.core.downloader.engine.DownloadExecutor].
+     */
+    fun launchContentIntent(): PendingIntent? {
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            ?: return null
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        return PendingIntent.getActivity(
+            context,
+            LAUNCH_REQUEST_CODE,
+            launchIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+    }
+
     /** True when notifications can actually be shown. */
     fun canPostNotifications(): Boolean {
         if (!notificationManager.areNotificationsEnabled()) return false
@@ -270,5 +286,6 @@ class DownloadNotificationBuilder @Inject constructor(
         const val PROGRESS_MAX = 100
         const val SEPARATOR = " · "
         const val REQUEST_CODE_PRIME = 31
+        const val LAUNCH_REQUEST_CODE = 1001
     }
 }

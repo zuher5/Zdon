@@ -26,6 +26,7 @@ data class UserPreferences(
     val subtitleLanguages: String = DEFAULT_SUBTITLE_LANGUAGES,
     val useDownloadArchive: Boolean = false,
     val restrictFilenames: Boolean = true,
+    val autoResumeAfterBoot: Boolean = false,
     val recentUrls: List<String> = emptyList(),
 ) {
     val hasDownloadLocation: Boolean

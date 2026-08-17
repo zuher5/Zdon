@@ -139,6 +139,11 @@ class UserPreferencesDataSource @Inject constructor(
         it[Keys.USE_DOWNLOAD_ARCHIVE] = enabled
     }
 
+    /** When enabled, interrupted downloads are queued again after a reboot. */
+    suspend fun setAutoResumeAfterBoot(enabled: Boolean) = edit {
+        it[Keys.AUTO_RESUME_AFTER_BOOT] = enabled
+    }
+
     suspend fun setRestrictFilenames(enabled: Boolean) = edit {
         it[Keys.RESTRICT_FILENAMES] = enabled
     }
@@ -186,6 +191,7 @@ class UserPreferencesDataSource @Inject constructor(
             ?: UserPreferences.DEFAULT_SUBTITLE_LANGUAGES,
         useDownloadArchive = this[Keys.USE_DOWNLOAD_ARCHIVE] ?: false,
         restrictFilenames = this[Keys.RESTRICT_FILENAMES] ?: true,
+        autoResumeAfterBoot = this[Keys.AUTO_RESUME_AFTER_BOOT] ?: false,
         recentUrls = this[Keys.RECENT_URLS].orEmpty().splitRecents(),
     )
 
@@ -214,6 +220,7 @@ class UserPreferencesDataSource @Inject constructor(
         val SUBTITLE_LANGUAGES = stringPreferencesKey("subtitle_languages")
         val USE_DOWNLOAD_ARCHIVE = booleanPreferencesKey("use_download_archive")
         val RESTRICT_FILENAMES = booleanPreferencesKey("restrict_filenames")
+        val AUTO_RESUME_AFTER_BOOT = booleanPreferencesKey("auto_resume_after_boot")
         val RECENT_URLS = stringPreferencesKey("recent_urls")
     }
 

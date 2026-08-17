@@ -62,6 +62,28 @@ class DownloadStorageManager @Inject constructor(
     }
 
     /**
+     * Deletes every staging and temporary directory whose download id is not in
+     * [knownIds]. Called on startup and whenever rows are deleted, so files
+     * orphaned by a failed or removed download cannot accumulate in app-private
+     * storage.
+     */
+    suspend fun clearOrphanedWorkspaces(knownIds: Set<Long>) = withContext(ioDispatcher) {
+        val roots = listOf(
+            File(context.filesDir, STAGING_ROOT),
+            File(context.cacheDir, TEMP_ROOT),
+        )
+        roots.forEach { root ->
+            if (!root.isDirectory) return@forEach
+            root.listFiles().orEmpty().forEach { child ->
+                val id = child.name.toLongOrNull()
+                if (id == null || id !in knownIds) {
+                    child.deleteRecursivelyQuietly()
+                }
+            }
+        }
+    }
+
+    /**
      * Persists read/write access to a SAF tree so the folder keeps working after
      * a reboot. Returns `true` when the grant was taken successfully.
      */

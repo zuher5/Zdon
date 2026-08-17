@@ -149,6 +149,10 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.setUseDownloadArchive(enabled)
     }
 
+    fun onAutoResumeAfterBootChanged(enabled: Boolean) = write {
+        settingsRepository.setAutoResumeAfterBoot(enabled)
+    }
+
     fun onRestrictFilenamesChanged(enabled: Boolean) = write {
         settingsRepository.setRestrictFilenames(enabled)
     }

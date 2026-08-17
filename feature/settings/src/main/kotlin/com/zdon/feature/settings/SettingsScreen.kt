@@ -119,6 +119,7 @@ fun SettingsRoute(
         onDownloadSubtitlesChanged = viewModel::onDownloadSubtitlesChanged,
         onSubtitleLanguagesChanged = viewModel::onSubtitleLanguagesChanged,
         onDownloadArchiveChanged = viewModel::onDownloadArchiveChanged,
+        onAutoResumeAfterBootChanged = viewModel::onAutoResumeAfterBootChanged,
         onRestrictFilenamesChanged = viewModel::onRestrictFilenamesChanged,
         onClearRecentUrls = viewModel::onClearRecentUrls,
         onUpdateNow = viewModel::updateYtDlpNow,
@@ -150,6 +151,7 @@ internal fun SettingsScreen(
     onDownloadSubtitlesChanged: (Boolean) -> Unit,
     onSubtitleLanguagesChanged: (String) -> Unit,
     onDownloadArchiveChanged: (Boolean) -> Unit,
+    onAutoResumeAfterBootChanged: (Boolean) -> Unit,
     onRestrictFilenamesChanged: (Boolean) -> Unit,
     onClearRecentUrls: () -> Unit,
     onUpdateNow: () -> Unit,
@@ -232,6 +234,14 @@ internal fun SettingsScreen(
                     title = stringResource(R.string.settings_retries),
                     value = stringResource(R.string.settings_retries_value, preferences.maxRetries),
                     onClick = { activeDialog = SettingsDialog.RETRIES },
+                )
+            }
+            item(key = "auto-resume") {
+                SettingsSwitchRow(
+                    title = stringResource(R.string.settings_auto_resume),
+                    summary = stringResource(R.string.settings_auto_resume_summary),
+                    checked = preferences.autoResumeAfterBoot,
+                    onCheckedChange = onAutoResumeAfterBootChanged,
                 )
             }
             item(key = "default-quality") {

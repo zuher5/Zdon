@@ -1,3 +1,5 @@
+import org.gradle.api.Project
+
 plugins {
     alias(libs.plugins.zdon.android.application)
     alias(libs.plugins.zdon.android.application.compose)
@@ -10,6 +12,44 @@ plugins {
 // splits below are only useful for the directly distributed APKs.
 val isBuildingBundle = gradle.startParameter.taskNames.any {
     it.substringAfterLast(':').startsWith("bundle")
+}
+
+/**
+ * Release signing configuration, resolved from Gradle properties or environment
+ * variables:
+ *
+ *  * `ZDON_KEYSTORE_PATH`
+ *  * `ZDON_STORE_PASSWORD`
+ *  * `ZDON_KEY_ALIAS`
+ *  * `ZDON_KEY_PASSWORD`
+ *
+ * When absent, release builds fall back to the debug key so local development
+ * keeps working. CI must provide the four values (via GitHub Secrets) so every
+ * published APK shares one permanent signature - without that, each CI run
+ * generates a fresh debug keystore and users cannot upgrade between releases.
+ */
+data class ReleaseSigningConfig(
+    val storeFile: java.io.File,
+    val storePassword: String,
+    val keyAlias: String,
+    val keyPassword: String,
+)
+
+fun Project.resolveReleaseSigningConfig(): ReleaseSigningConfig? {
+    fun value(key: String): String? =
+        providers.gradleProperty(key).orNull?.takeIf { it.isNotBlank() }
+            ?: System.getenv(key).takeIf { it.isNotBlank() }
+
+    val storePath = value("ZDON_KEYSTORE_PATH") ?: return null
+    val storeFile = java.io.File(storePath)
+    if (!storeFile.isFile) {
+        logger.warn("ZDON_KEYSTORE_PATH is set but '$storePath' is not a file; using debug signing")
+        return null
+    }
+    val storePassword = value("ZDON_STORE_PASSWORD") ?: return null
+    val keyAlias = value("ZDON_KEY_ALIAS") ?: return null
+    val keyPassword = value("ZDON_KEY_PASSWORD") ?: return null
+    return ReleaseSigningConfig(storeFile, storePassword, keyAlias, keyPassword)
 }
 
 android {
@@ -39,6 +79,26 @@ android {
         }
     }
 
+    signingConfigs {
+        val releaseSigning = resolveReleaseSigningConfig()
+        if (releaseSigning != null) {
+            create("release") {
+                storeFile = releaseSigning.storeFile
+                storePassword = releaseSigning.storePassword
+                keyAlias = releaseSigning.keyAlias
+                keyPassword = releaseSigning.keyPassword
+                enableV1Signing = true
+                enableV2Signing = true
+            }
+            logger.lifecycle("Release signing configured from ZDON_* signing properties")
+        } else {
+            logger.warn(
+                "No ZDON_* signing properties set; release builds will be signed with the " +
+                    "debug key (not suitable for distribution).",
+            )
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
@@ -52,7 +112,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            signingConfig = signingConfigs.getByName("debug")
+            // A release keystore wins when configured; otherwise fall back to the
+            // debug key so local builds still install. Distribution builds must
+            // never rely on the fallback.
+            signingConfig = signingConfigs.findByName("release")
+                ?: signingConfigs.getByName("debug")
         }
     }
 

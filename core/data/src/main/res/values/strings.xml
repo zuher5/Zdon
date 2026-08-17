@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Media analysis errors shown to the user -->
+    <string name="media_invalid_url">That does not look like a valid media link</string>
+
+</resources>
