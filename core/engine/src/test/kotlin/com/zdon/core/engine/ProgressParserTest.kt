@@ -130,7 +130,7 @@ class ProgressParserTest {
             ProgressParser.parseDestination("""[Merger] Merging formats into "merged.mkv""""),
         )
         assertEquals(
-            "cached.mp4",
+            "/home/user/cached.mp4",
             ProgressParser.parseDestination(
                 "[download] /home/user/cached.mp4 has already been downloaded",
             ),

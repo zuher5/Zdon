@@ -1,3 +1,4 @@
+import java.io.File
 import org.gradle.api.Project
 
 plugins {
@@ -29,7 +30,7 @@ val isBuildingBundle = gradle.startParameter.taskNames.any {
  * generates a fresh debug keystore and users cannot upgrade between releases.
  */
 data class ReleaseSigningConfig(
-    val storeFile: java.io.File,
+    val storeFile: File,
     val storePassword: String,
     val keyAlias: String,
     val keyPassword: String,
@@ -38,10 +39,10 @@ data class ReleaseSigningConfig(
 fun Project.resolveReleaseSigningConfig(): ReleaseSigningConfig? {
     fun value(key: String): String? =
         providers.gradleProperty(key).orNull?.takeIf { it.isNotBlank() }
-            ?: System.getenv(key).takeIf { it.isNotBlank() }
+            ?: System.getenv(key)?.takeIf { it.isNotBlank() }
 
     val storePath = value("ZDON_KEYSTORE_PATH") ?: return null
-    val storeFile = java.io.File(storePath)
+    val storeFile = File(storePath)
     if (!storeFile.isFile) {
         logger.warn("ZDON_KEYSTORE_PATH is set but '$storePath' is not a file; using debug signing")
         return null

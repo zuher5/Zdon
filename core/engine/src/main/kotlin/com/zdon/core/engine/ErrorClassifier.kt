@@ -95,7 +95,6 @@ object ErrorClassifier {
             "login required",
             "use --cookies",
             "requested content is not available, use --cookies",
-            "sign in to confirm",
             "members only",
             "this video requires payment",
             "join this channel to get access",

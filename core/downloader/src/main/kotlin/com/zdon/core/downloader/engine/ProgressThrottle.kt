@@ -13,7 +13,9 @@ import java.util.concurrent.atomic.AtomicReference
  * thread saturated and cause visible UI jank. The latest value is always kept, so
  * throttling never loses the final state.
  */
-internal class ProgressThrottle {
+internal class ProgressThrottle(
+    private val timeMillis: () -> Long = System::currentTimeMillis,
+) {
 
     private val pending = AtomicReference<DownloadProgress?>(null)
     private val lastWriteAt = AtomicReference(0L)
@@ -25,7 +27,7 @@ internal class ProgressThrottle {
 
     /** Writes the latest snapshot when the throttle window has elapsed. */
     suspend fun flushIfDue(dao: DownloadDao) {
-        val now = System.currentTimeMillis()
+        val now = timeMillis()
         if (now - lastWriteAt.get() < MIN_INTERVAL_MILLIS) return
         flush(dao, now)
     }

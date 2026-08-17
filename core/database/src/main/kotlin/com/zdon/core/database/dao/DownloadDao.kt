@@ -39,7 +39,7 @@ interface DownloadDao {
     @Query("SELECT * FROM downloads WHERE id = :id")
     suspend fun getById(id: Long): DownloadEntity?
 
-    @Query("SELECT id FROM downloads WHERE status = 'QUEUED' ORDER BY created_at ASC LIMIT :limit")
+    @Query("SELECT * FROM downloads WHERE status = 'QUEUED' ORDER BY created_at ASC LIMIT :limit")
     suspend fun getNextQueued(limit: Int): List<DownloadEntity>
 
     @Query("SELECT id FROM downloads")

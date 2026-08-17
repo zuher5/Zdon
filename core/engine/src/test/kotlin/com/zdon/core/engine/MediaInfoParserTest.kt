@@ -77,7 +77,6 @@ class MediaInfoParserTest {
           "channel": "The Channel",
           "duration": 245,
           "view_count": 1000,
-          "thumbnail": "https://example.com/profile.png",
           "thumbnails": [
             {"url": "https://example.com/low.png", "width": 320, "height": 180},
             {"url": "https://example.com/high.png", "width": 1280, "height": 720}

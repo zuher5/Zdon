@@ -38,15 +38,17 @@ class ProgressThrottleTest {
     }
 
     @Test
-    fun `flush skips the second update inside the throttle window`() = runTest {
+    fun `flushIfDue skips the second update inside the throttle window`() = runTest {
         val dao = FakeDownloadDao()
-        val throttle = ProgressThrottle()
+        var now = 1_000L
+        val throttle = ProgressThrottle { now }
 
         throttle.offer(progress(10f))
-        throttle.flush(dao, now = 1_000L)
+        throttle.flushIfDue(dao)
         throttle.offer(progress(20f))
-        // Same timestamp: inside the window, so the write is dropped.
-        throttle.flush(dao, now = 1_000L)
+        // Same timestamp: still inside the window, so the write is dropped
+        // and the latest value stays pending.
+        throttle.flushIfDue(dao)
 
         assertEquals(1, dao.updates.size)
     }
@@ -67,16 +69,18 @@ class ProgressThrottleTest {
     }
 
     @Test
-    fun `pending data survives both flushes while the window is skipped`() = runTest {
+    fun `pending data survives while the window is skipped`() = runTest {
         val dao = FakeDownloadDao()
-        val throttle = ProgressThrottle()
+        var now = 1_000L
+        val throttle = ProgressThrottle { now }
 
         throttle.offer(progress(10f))
-        throttle.flush(dao, now = 1_000L)
+        throttle.flushIfDue(dao)
         throttle.offer(progress(40f))
-        throttle.flush(dao, now = 1_000L)
+        throttle.flushIfDue(dao)
         throttle.offer(progress(90f))
-        throttle.flush(dao, now = 61_000L)
+        now = 61_000L
+        throttle.flushIfDue(dao)
 
         // Only the very latest value is written, older ones are coalesced.
         assertEquals(2, dao.updates.size)
