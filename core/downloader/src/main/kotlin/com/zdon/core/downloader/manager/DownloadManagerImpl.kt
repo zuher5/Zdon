@@ -194,7 +194,8 @@ class DownloadManagerImpl @Inject constructor(
     private fun startJob(downloadId: Long) {
         val job = scope.launch(ioDispatcher) {
             try {
-                executor.execute(downloadId)
+                val status = executor.execute(downloadId)
+                maybeAutoRetry(downloadId, status)
             } catch (cancellation: kotlinx.coroutines.CancellationException) {
                 throw cancellation
             } catch (throwable: Throwable) {
@@ -207,5 +208,35 @@ class DownloadManagerImpl @Inject constructor(
             // A finished slot may allow the next queued item to start.
             scope.launch(ioDispatcher) { pump() }
         }
+    }
+
+    /**
+     * Re-queues a download that failed for a transient reason (network drop,
+     * HTTP 403, mid-transfer interruption) so the user does not have to hit
+     * retry by hand. yt-dlp already retries within a single run; this covers the
+     * cases where the whole process dies. Retries are capped by
+     * [MAX_AUTO_RETRIES] and spaced with exponential backoff so a permanently
+     * broken URL still lands in FAILED promptly.
+     */
+    private suspend fun maybeAutoRetry(downloadId: Long, status: DownloadStatus) {
+        if (status != DownloadStatus.FAILED) return
+        val entity = downloadDao.getById(downloadId) ?: return
+        if (entity.errorType?.isTransient != true) return
+        if (entity.retryCount >= MAX_AUTO_RETRIES) return
+
+        val nextRetry = entity.retryCount + 1
+        val backoffMillis = AUTO_RETRY_BASE_DELAY_MILLIS shl (nextRetry - 1)
+        Timber.i(
+            "Auto-retrying download %d (attempt %d/%d) after %d ms; error=%s",
+            downloadId, nextRetry, MAX_AUTO_RETRIES, backoffMillis, entity.errorType,
+        )
+        kotlinx.coroutines.delay(backoffMillis)
+        downloadDao.requeue(downloadId, retryCount = nextRetry, System.currentTimeMillis())
+        pump()
+    }
+
+    private companion object {
+        const val MAX_AUTO_RETRIES = 3
+        const val AUTO_RETRY_BASE_DELAY_MILLIS = 2_000L
     }
 }

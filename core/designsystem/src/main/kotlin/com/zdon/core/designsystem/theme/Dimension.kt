@@ -9,16 +9,16 @@ import androidx.compose.ui.unit.dp
 object ZdonDimensions {
 
     val spacingXSmall = 4.dp
-    val spacingSmall = 8.dp
-    val spacingMedium = 12.dp
-    val spacingLarge = 16.dp
-    val spacingXLarge = 24.dp
-    val spacingXXLarge = 32.dp
+    val spacingSmall = 6.dp
+    val spacingMedium = 10.dp
+    val spacingLarge = 12.dp
+    val spacingXLarge = 20.dp
+    val spacingXXLarge = 28.dp
 
-    val screenPaddingCompact = 16.dp
-    val screenPaddingExpanded = 32.dp
+    val screenPaddingCompact = 12.dp
+    val screenPaddingExpanded = 24.dp
 
-    val thumbnailRadius = 8.dp
-    val cardRadius = 12.dp
+    val thumbnailRadius = 6.dp
+    val cardRadius = 8.dp
     val iconButtonSize = 28.dp
 }

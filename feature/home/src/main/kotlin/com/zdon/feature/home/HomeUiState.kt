@@ -1,6 +1,7 @@
 package com.zdon.feature.home
 
 import com.zdon.core.model.AudioFormat
+import com.zdon.core.model.ContainerFormat
 import com.zdon.core.model.MediaFormat
 import com.zdon.core.model.MediaInfo
 import com.zdon.core.model.VideoQuality
@@ -21,6 +22,8 @@ data class HomeUiState(
     val selectedFormatId: String? = null,
     val extractAudio: Boolean = false,
     val audioFormat: AudioFormat = AudioFormat.MP3,
+    val container: ContainerFormat = ContainerFormat.MP4,
+    val recodeH264: Boolean = false,
     val downloadSubtitles: Boolean = false,
     val embedThumbnail: Boolean = false,
     val embedMetadata: Boolean = true,

@@ -65,6 +65,8 @@ fun DownloadEntity.toRequest(): DownloadRequest = DownloadRequest(
     thumbnailUrl = thumbnailUrl,
     uploader = uploader,
     durationSeconds = durationSeconds,
+    container = container,
+    recodeH264 = recodeH264,
 )
 
 fun DownloadRequest.toEntity(nowMillis: Long): DownloadEntity = DownloadEntity(
@@ -84,6 +86,8 @@ fun DownloadRequest.toEntity(nowMillis: Long): DownloadEntity = DownloadEntity(
     downloadThumbnail = downloadThumbnail,
     embedThumbnail = embedThumbnail,
     embedMetadata = embedMetadata,
+    container = container,
+    recodeH264 = recodeH264,
     isPlaylist = isPlaylist,
     playlistItems = playlistItems,
     outputTemplate = outputTemplate,

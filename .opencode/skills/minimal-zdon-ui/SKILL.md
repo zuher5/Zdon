@@ -21,8 +21,10 @@ or colorful-chrome patterns.
 - Dynamic color support lives in `Theme.kt` (opt-in via Settings, default off).
 
 ## 2. Type
-- `ZdonTypography` in core/designsystem: system font, standard-weight headings,
-  no letter-spacing. Do not reintroduce bold headings or tracked uppercase text.
+- `ZdonTypography` in core/designsystem: **Poppins** family (Regular/Medium/
+  SemiBold in `res/font/poppins_*.ttf`), compact sizing (titleMedium 14sp,
+  bodyMedium 13sp) with tight line heights. No letter-spacing. Do not
+  reintroduce tracked uppercase text or revert to `FontFamily.Default`.
 
 ## 3. Layout & components
 - Lists use flat rows with `HorizontalDivider(color = outlineVariant)`, never

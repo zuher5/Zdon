@@ -2,6 +2,7 @@ package com.zdon.core.engine
 
 import com.yausername.youtubedl_android.YoutubeDLRequest
 import com.zdon.core.model.AudioFormat
+import com.zdon.core.model.ContainerFormat
 import com.zdon.core.model.DownloadRequest
 import com.zdon.core.model.VideoQuality
 import org.junit.Assert.assertFalse
@@ -184,6 +185,70 @@ class YtDlpCommandBuilderTest {
         val formatIndex = command.indexOf("-f")
         assertTrue(formatIndex >= 0)
         assertTrue(command[formatIndex + 1] == "bestvideo[height<=?1080]+bestaudio")
+    }
+
+    @Test
+    fun `mp4 container emits remux without recode`() {
+        val request = fullRequest().copy(container = ContainerFormat.MP4, recodeH264 = false)
+        val command = builder
+            .buildDownloadRequest(request, fullOptions(), recentCapabilities)
+            .buildCommand()
+
+        assertOptionsDocumented(command)
+        assertTrue(command.contains("--remux-video"))
+        val remuxIndex = command.indexOf("--remux-video")
+        assertTrue(command[remuxIndex + 1] == "mp4")
+        assertFalse(command.contains("--recode-video"))
+    }
+
+    @Test
+    fun `mkv container remuxes to mkv`() {
+        val request = fullRequest().copy(container = ContainerFormat.MKV, recodeH264 = false)
+        val command = builder
+            .buildDownloadRequest(request, fullOptions(), recentCapabilities)
+            .buildCommand()
+
+        val remuxIndex = command.indexOf("--remux-video")
+        assertTrue(remuxIndex >= 0)
+        assertTrue(command[remuxIndex + 1] == "mkv")
+    }
+
+    @Test
+    fun `original container skips remux and recode`() {
+        val request = fullRequest().copy(container = ContainerFormat.ORIGINAL, recodeH264 = false)
+        val command = builder
+            .buildDownloadRequest(request, fullOptions(), recentCapabilities)
+            .buildCommand()
+
+        assertFalse(command.contains("--remux-video"))
+        assertFalse(command.contains("--recode-video"))
+    }
+
+    @Test
+    fun `recode h264 emits recode-video and drops remux`() {
+        val request = fullRequest().copy(container = ContainerFormat.MP4, recodeH264 = true)
+        val command = builder
+            .buildDownloadRequest(request, fullOptions(), recentCapabilities)
+            .buildCommand()
+
+        assertOptionsDocumented(command)
+        val recodeIndex = command.indexOf("--recode-video")
+        assertTrue(recodeIndex >= 0)
+        assertTrue(command[recodeIndex + 1] == "mp4")
+        assertFalse(command.contains("--remux-video"))
+        // Selector should bias toward H.264 / AAC.
+        val formatIndex = command.indexOf("-f")
+        assertTrue(command[formatIndex + 1].contains("avc1"))
+    }
+
+    @Test
+    fun `retry sleep backoff is emitted and documented`() {
+        val command = builder
+            .buildDownloadRequest(fullRequest(), fullOptions(), recentCapabilities)
+            .buildCommand()
+
+        assertOptionsDocumented(command)
+        assertTrue(command.contains("--retry-sleep"))
     }
 
     private fun assertOptionsDocumented(command: List<String>) {

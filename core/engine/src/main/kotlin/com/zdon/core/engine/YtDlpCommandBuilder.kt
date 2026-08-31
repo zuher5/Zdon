@@ -105,6 +105,10 @@ class YtDlpCommandBuilder @Inject constructor() {
         addIfSupported(capabilities, "--continue")
         addIfSupported(capabilities, "--retries", options.retries.toString())
         addIfSupported(capabilities, "--fragment-retries", options.retries.toString())
+        // Exponential backoff between retries so a flaky network or a rate-limited
+        // host (TikTok anti-bot, etc.) gets a chance to recover mid-run instead of
+        // failing the whole download.
+        addIfSupported(capabilities, "--retry-sleep", RETRY_SLEEP_POLICY)
         addIfSupported(capabilities, "--socket-timeout", SOCKET_TIMEOUT_SECONDS.toString())
         addIfSupported(capabilities, "--no-abort-on-error")
     }
@@ -114,18 +118,46 @@ class YtDlpCommandBuilder @Inject constructor() {
         capabilities: YtDlpCapabilities,
     ) {
         val explicitFormat = ArgumentSanitizer.sanitizeFormatExpression(request.customFormatId)
+        val maxHeight = request.quality.maxHeight
         when {
             explicitFormat != null -> addIfSupported(capabilities, "-f", explicitFormat)
             request.quality.isAudioOnly || request.extractAudio ->
                 addIfSupported(capabilities, "-f", AUDIO_SELECTOR)
-            request.quality.maxHeight != null ->
+            // When the user asked for a TikTok-friendly file, bias the selector
+            // toward H.264/AAC so the recode is a no-op when the site already
+            // serves it and a cheap transcode otherwise.
+            request.recodeH264 && maxHeight != null ->
+                addIfSupported(capabilities, "-f", h264VideoSelector(maxHeight))
+            request.recodeH264 ->
+                addIfSupported(capabilities, "-f", H264_BEST_SELECTOR)
+            maxHeight != null ->
                 addIfSupported(capabilities, "-f", videoSelector(request.quality))
             else -> addIfSupported(capabilities, "-f", BEST_SELECTOR)
         }
 
         if (!request.extractAudio && !request.quality.isAudioOnly) {
-            // Prefer a directly playable container when one is available.
-            addIfSupported(capabilities, "--merge-output-format", DEFAULT_CONTAINER)
+            applyContainerOptions(request, capabilities)
+        }
+    }
+
+    private fun YoutubeDLRequest.applyContainerOptions(
+        request: DownloadRequest,
+        capabilities: YtDlpCapabilities,
+    ) {
+        // Recode wins: it re-encodes video to H.264 and remuxes into MP4, which
+        // makes any explicit container choice redundant.
+        if (request.recodeH264) {
+            addIfSupported(capabilities, "--recode-video", RECODE_VIDEO_TARGET)
+            return
+        }
+
+        val container = if (request.container.remuxes) request.container.extension else DEFAULT_CONTAINER
+        // Container to use when yt-dlp still has to merge separate video+audio
+        // streams; keeps a directly playable file even without a remux.
+        addIfSupported(capabilities, "--merge-output-format", container)
+        // Swap the wrapper on already-muxed downloads without re-encoding.
+        if (request.container.remuxes) {
+            addIfSupported(capabilities, "--remux-video", container)
         }
     }
 
@@ -214,6 +246,18 @@ class YtDlpCommandBuilder @Inject constructor() {
     }
 
     /**
+     * Format selector that prefers H.264 video + AAC audio at or below [height].
+     * When the site already serves that pair the later `--recode-video` becomes a
+     * cheap remux; otherwise it falls back to any stream and the recode transcodes.
+     */
+    private fun h264VideoSelector(height: Int): String = buildString {
+        append("bestvideo[height<=?$height][vcodec^=avc1]+bestaudio[acodec^=mp4a]/")
+        append("bestvideo[height<=?$height][ext=mp4]+bestaudio[ext=m4a]/")
+        append("bestvideo[height<=?$height]+bestaudio/")
+        append("best[height<=?$height]/best")
+    }
+
+    /**
      * Adds [option] only when [capabilities] report the installed yt-dlp binary
      * accepts it. Unavailable options are silently omitted.
      */
@@ -234,11 +278,16 @@ class YtDlpCommandBuilder @Inject constructor() {
 
     private companion object {
         const val BEST_SELECTOR = "bestvideo*+bestaudio/best"
+        const val H264_BEST_SELECTOR =
+            "bestvideo[vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best"
         const val AUDIO_SELECTOR = "bestaudio/best"
         const val DEFAULT_CONTAINER = "mp4"
+        const val RECODE_VIDEO_TARGET = "mp4"
         const val DEFAULT_AUDIO_QUALITY = "0"
         const val DEFAULT_SUBTITLE_LANGUAGE = "en"
-        const val SOCKET_TIMEOUT_SECONDS = 30
+        const val SOCKET_TIMEOUT_SECONDS = 60
+        // yt-dlp: exponential backoff 1s, 2s, 4s, 8s (then capped at 8s).
+        const val RETRY_SLEEP_POLICY = "exp=1:8"
     }
 }
 

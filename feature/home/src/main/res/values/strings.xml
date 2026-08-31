@@ -50,6 +50,8 @@
     <string name="home_options_title">Options</string>
     <string name="home_extract_audio">Extract audio only</string>
     <string name="home_audio_format">Audio format</string>
+    <string name="home_output_format">Output format</string>
+    <string name="home_recode_h264">Recode to H.264 + AAC (best editor compatibility)</string>
     <string name="home_download_subtitles">Download subtitles</string>
     <string name="home_embed_thumbnail">Embed thumbnail</string>
     <string name="home_embed_metadata">Embed metadata</string>
