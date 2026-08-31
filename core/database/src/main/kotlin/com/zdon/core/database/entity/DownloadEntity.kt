@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.zdon.core.model.AudioFormat
+import com.zdon.core.model.ContainerFormat
 import com.zdon.core.model.DownloadErrorType
 import com.zdon.core.model.DownloadStatus
 import com.zdon.core.model.VideoQuality
@@ -100,6 +101,12 @@ data class DownloadEntity(
 
     @ColumnInfo(name = "embed_metadata")
     val embedMetadata: Boolean = false,
+
+    @ColumnInfo(name = "container", defaultValue = "MP4")
+    val container: ContainerFormat = ContainerFormat.MP4,
+
+    @ColumnInfo(name = "recode_h264", defaultValue = "0")
+    val recodeH264: Boolean = false,
 
     @ColumnInfo(name = "is_playlist")
     val isPlaylist: Boolean = false,

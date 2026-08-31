@@ -2,6 +2,7 @@ package com.zdon.core.database.converter
 
 import androidx.room.TypeConverter
 import com.zdon.core.model.AudioFormat
+import com.zdon.core.model.ContainerFormat
 import com.zdon.core.model.DownloadErrorType
 import com.zdon.core.model.DownloadStatus
 import com.zdon.core.model.VideoQuality
@@ -31,6 +32,12 @@ class EnumConverters {
 
     @TypeConverter
     fun toAudioFormat(value: String): AudioFormat = AudioFormat.fromNameOrDefault(value)
+
+    @TypeConverter
+    fun fromContainerFormat(value: ContainerFormat): String = value.name
+
+    @TypeConverter
+    fun toContainerFormat(value: String): ContainerFormat = ContainerFormat.fromNameOrDefault(value)
 
     @TypeConverter
     fun fromDownloadErrorType(value: DownloadErrorType?): String? = value?.name

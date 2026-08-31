@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zdon.core.designsystem.component.ZdonEmptyState
 import com.zdon.core.designsystem.util.isExpandedWidth
 import com.zdon.core.model.AudioFormat
+import com.zdon.core.model.ContainerFormat
 import com.zdon.core.model.VideoQuality
 import com.zdon.feature.home.component.DownloadOptionsCard
 import com.zdon.feature.home.component.FormatRow
@@ -100,6 +101,8 @@ fun HomeRoute(
         onFormatSelected = viewModel::onFormatSelected,
         onExtractAudioChange = viewModel::onExtractAudioChanged,
         onAudioFormatSelected = viewModel::onAudioFormatSelected,
+        onContainerSelected = viewModel::onContainerSelected,
+        onRecodeH264Change = viewModel::onRecodeH264Changed,
         onDownloadSubtitlesChange = viewModel::onDownloadSubtitlesChanged,
         onEmbedThumbnailChange = viewModel::onEmbedThumbnailChanged,
         onEmbedMetadataChange = viewModel::onEmbedMetadataChanged,
@@ -122,6 +125,8 @@ internal fun HomeScreen(
     onFormatSelected: (String) -> Unit,
     onExtractAudioChange: (Boolean) -> Unit,
     onAudioFormatSelected: (AudioFormat) -> Unit,
+    onContainerSelected: (ContainerFormat) -> Unit,
+    onRecodeH264Change: (Boolean) -> Unit,
     onDownloadSubtitlesChange: (Boolean) -> Unit,
     onEmbedThumbnailChange: (Boolean) -> Unit,
     onEmbedMetadataChange: (Boolean) -> Unit,
@@ -216,6 +221,8 @@ internal fun HomeScreen(
                     state = state,
                     onExtractAudioChange = onExtractAudioChange,
                     onAudioFormatSelected = onAudioFormatSelected,
+                    onContainerSelected = onContainerSelected,
+                    onRecodeH264Change = onRecodeH264Change,
                     onDownloadSubtitlesChange = onDownloadSubtitlesChange,
                     onEmbedThumbnailChange = onEmbedThumbnailChange,
                     onEmbedMetadataChange = onEmbedMetadataChange,

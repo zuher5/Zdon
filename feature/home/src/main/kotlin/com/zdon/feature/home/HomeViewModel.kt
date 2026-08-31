@@ -11,6 +11,7 @@ import com.zdon.core.data.repository.DownloadRepository
 import com.zdon.core.data.repository.MediaRepository
 import com.zdon.core.data.repository.SettingsRepository
 import com.zdon.core.model.AudioFormat
+import com.zdon.core.model.ContainerFormat
 import com.zdon.core.model.DownloadRequest
 import com.zdon.core.model.MediaInfo
 import com.zdon.core.model.VideoQuality
@@ -173,6 +174,20 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(audioFormat = format) }
     }
 
+    fun onContainerSelected(container: ContainerFormat) {
+        // Recode only produces MP4, so drop it when the user picks another container.
+        _uiState.update {
+            it.copy(
+                container = container,
+                recodeH264 = it.recodeH264 && container == ContainerFormat.MP4,
+            )
+        }
+    }
+
+    fun onRecodeH264Changed(enabled: Boolean) {
+        _uiState.update { it.copy(recodeH264 = enabled, container = ContainerFormat.MP4) }
+    }
+
     fun onDownloadSubtitlesChanged(enabled: Boolean) {
         _uiState.update { it.copy(downloadSubtitles = enabled) }
     }
@@ -275,6 +290,8 @@ class HomeViewModel @Inject constructor(
             thumbnailUrl = info?.thumbnailUrl,
             uploader = info?.uploader,
             durationSeconds = info?.durationSeconds ?: 0L,
+            container = container,
+            recodeH264 = recodeH264,
         )
     }
 

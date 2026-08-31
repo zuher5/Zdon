@@ -24,6 +24,8 @@ data class DownloadRequest(
     val thumbnailUrl: String? = null,
     val uploader: String? = null,
     val durationSeconds: Long = 0L,
+    val container: ContainerFormat = ContainerFormat.MP4,
+    val recodeH264: Boolean = false,
 ) {
     init {
         require(url.isNotBlank()) { "Download URL must not be blank" }
@@ -35,5 +37,6 @@ data class DownloadRequest(
             embedSubtitles ||
             embedThumbnail ||
             embedMetadata ||
+            recodeH264 && !extractAudio ||
             quality != VideoQuality.AUDIO_ONLY && quality != VideoQuality.CUSTOM
 }

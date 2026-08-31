@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Row
 import com.zdon.core.model.AudioFormat
+import com.zdon.core.model.ContainerFormat
 import com.zdon.feature.home.HomeUiState
 import com.zdon.feature.home.R
 
@@ -30,6 +31,8 @@ internal fun DownloadOptionsCard(
     state: HomeUiState,
     onExtractAudioChange: (Boolean) -> Unit,
     onAudioFormatSelected: (AudioFormat) -> Unit,
+    onContainerSelected: (ContainerFormat) -> Unit,
+    onRecodeH264Change: (Boolean) -> Unit,
     onDownloadSubtitlesChange: (Boolean) -> Unit,
     onEmbedThumbnailChange: (Boolean) -> Unit,
     onEmbedMetadataChange: (Boolean) -> Unit,
@@ -37,6 +40,7 @@ internal fun DownloadOptionsCard(
     onCustomFileNameChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isVideo = !state.extractAudio && !state.selectedQuality.isAudioOnly
     Card(modifier = modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(12.dp),
@@ -70,6 +74,33 @@ internal fun DownloadOptionsCard(
                             label = { Text(text = format.label) },
                         )
                     }
+                }
+            }
+
+            if (isVideo) {
+                Text(
+                    text = stringResource(R.string.home_output_format),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    ContainerFormat.entries.forEach { container ->
+                        FilterChip(
+                            selected = state.container == container,
+                            onClick = { onContainerSelected(container) },
+                            label = { Text(text = container.label) },
+                        )
+                    }
+                }
+                if (state.container == ContainerFormat.MP4) {
+                    OptionSwitch(
+                        label = stringResource(R.string.home_recode_h264),
+                        checked = state.recodeH264,
+                        onCheckedChange = onRecodeH264Change,
+                    )
                 }
             }
 
