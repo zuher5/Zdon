@@ -210,20 +210,23 @@ internal fun HistoryScreen(
  * receiving app for the duration of the intent instead of exposing a file path.
  */
 private fun openMedia(context: android.content.Context, path: String): Boolean {
-    val uri = runCatching { Uri.parse(path) }.getOrNull() ?: return false
-    val mimeType = context.contentResolver.getType(uri) ?: "*/*"
-    val intent = Intent(Intent.ACTION_VIEW).apply {
-        setDataAndType(uri, mimeType)
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
-
-    if (intent.resolveActivity(context.packageManager) == null) {
-        return false
-    }
-
     return try {
-        context.startActivity(intent)
+        val uri = Uri.parse(path) ?: return false
+        val mimeType = context.contentResolver.getType(uri) ?: "*/*"
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, mimeType)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        // Use createChooser to let the system handle resolving the intent. This bypasses
+        // Android 11+ package visibility restrictions and ensures the user always gets
+        // a prompt or goes straight to their default handler without crashing.
+        val chooser = Intent.createChooser(intent, null).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        
+        context.startActivity(chooser)
         true
     } catch (_: Throwable) {
         false

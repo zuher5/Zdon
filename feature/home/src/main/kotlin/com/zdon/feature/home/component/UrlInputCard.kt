@@ -66,18 +66,13 @@ internal fun UrlInputCard(
                 .fillMaxWidth()
                 .semantics { contentDescription = fieldLabel },
             placeholder = {
-                Text(
-                    text = stringResource(R.string.home_url_placeholder),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                )
+                Text(text = stringResource(R.string.home_url_placeholder))
             },
             supportingText = {
                 val message = error?.messageRes()?.let { stringResource(it) }
                 Text(text = message ?: stringResource(R.string.home_url_supporting))
             },
             isError = error != null,
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             singleLine = true,
             trailingIcon = {
                 if (url.isNotEmpty()) {
