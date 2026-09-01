@@ -24,5 +24,5 @@ dependencies {
 
     // org.json ships as a stub inside android.jar; unit tests need the real
     // implementation to parse MediaInfoParser output on the JVM.
-    testImplementation("org.json:json:20240303")
+    testImplementation("org.json:json:20260814")
 }
