@@ -17,11 +17,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
@@ -52,19 +56,29 @@ internal fun UrlInputCard(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        val fieldLabel = stringResource(R.string.home_url_label)
         OutlinedTextField(
             value = url,
             onValueChange = onUrlChange,
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = stringResource(R.string.home_url_label)) },
-            placeholder = { Text(text = stringResource(R.string.home_url_placeholder)) },
+            // The visible label is dropped for a cleaner, centred field, so the
+            // name is exposed to accessibility services instead.
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { contentDescription = fieldLabel },
+            placeholder = {
+                Text(
+                    text = stringResource(R.string.home_url_placeholder),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                )
+            },
             supportingText = {
                 val message = error?.messageRes()?.let { stringResource(it) }
                 Text(text = message ?: stringResource(R.string.home_url_supporting))
             },
             isError = error != null,
-            minLines = 2,
-            maxLines = 4,
+            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+            singleLine = true,
             trailingIcon = {
                 if (url.isNotEmpty()) {
                     IconButton(onClick = onClearClick) {
