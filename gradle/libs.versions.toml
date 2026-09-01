@@ -2,7 +2,7 @@
 # Build tooling
 agp = "8.13.2"
 kotlin = "2.2.20"
-ksp = "2.2.20-2.0.4"
+ksp = "2.3.11"
 
 # AndroidX
 activityCompose = "1.10.1"
